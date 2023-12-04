@@ -8,6 +8,7 @@ th, td {
   border-left: 1px solid black;
   padding-left: .5rem;
   padding-right: .5rem;
+  white-space: nowrap;
 }
 
 .title {
