@@ -6411,6 +6411,8 @@ var author$project$View$viewQueryResult = function (result) {
 			_List_Nil,
 			_List_fromArray(
 				[
+					elm$html$Html$text(
+					elm$core$String$fromInt(success.count)),
 					A2(
 					elm$html$Html$table,
 					_List_Nil,

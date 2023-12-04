@@ -21,7 +21,7 @@ app.post('/postgres', (req, res) => {
             if (result.length > 0) {
                 data.count = result.count;
                 data.columns = result.columns.map( (c) => c.name );
-                data.rows = result.map( (r) => Object.values(r) );
+                data.rows = result.map( (r) => Object.values(r).map(JSON.stringify) );
             }
             res.statusCode = 200;
             res.setHeader('Content-Type', 'application/json');

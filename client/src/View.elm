@@ -50,8 +50,8 @@ viewQueryResult result =
 
         Ok success ->
             Html.div []
-                --Html.text (String.fromInt success.count)
-                [ Html.table []
+                [ Html.text (String.fromInt success.count)
+                , Html.table []
                     (viewQueryResultHeaderRow success.columns
                         :: List.map viewQueryResultDataRow success.rows
                     )
