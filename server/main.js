@@ -29,9 +29,9 @@ app.post('/postgres', (req, res) => {
         })
         .catch((reason) => {
             const error = {
-                message : reason.message,
-                severity : reason.severity,
-                code : reason.code
+                message : reason.message === undefined ? "UNKNOWN FAILURE" : reason.message,
+                severity : reason.severity === undefined ? "" : reason.severity,
+                code : reason.code === undefined ? "" : reason.code
             };
             console.log(error);
             res.statusCode = 200;
@@ -40,6 +40,10 @@ app.post('/postgres', (req, res) => {
         })
 })
 
-app.listen(8080, '0.0.0.0', () => {
-    console.log('http://localhost:8080');
+var port = 8080
+if (process.env.LISTEN_PORT !== undefined) {
+    port = parseInt(process.env.LISTEN_PORT, 10)
+}
+app.listen(port, '0.0.0.0', () => {
+    console.log(`http://localhost:${port}`);
 })
