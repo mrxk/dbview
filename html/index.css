@@ -1,0 +1,52 @@
+table {
+  border-top: 1px solid black;
+  border-right: 1px solid black;
+}
+
+th, td {
+  border-bottom: 1px solid black;
+  border-left: 1px solid black;
+  padding-left: .5rem;
+  padding-right: .5rem;
+}
+
+.title {
+  text-align: center;
+}
+
+.queryContainer {
+  margin-bottom: 2rem;
+  padding: 2px;
+  border-bottom: 2px solid grey;
+}
+
+.output {
+  width: 100%;
+  height: 25rem;
+  overflow: auto;
+  resize: vertical;
+}
+
+.closeButton {
+  float:right;
+}
+
+.closeButton:hover {
+  cursor: pointer;
+}
+
+.queryInput {
+  width: 100%;
+  height: 1.5lh;
+  resize: vertical;
+}
+
+.executeButton {
+}
+
+/*
+
+.watchCheckbox, .watchLabel {
+  float: right;
+}
+*/
