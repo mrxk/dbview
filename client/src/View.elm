@@ -16,7 +16,11 @@ viewBody : Model.Model -> Html.Html Model.Msg
 viewBody model =
     Html.div []
         [ Html.h1 [ Attributes.class "title" ] [ Html.text "DBView" ]
-        , Html.div [ Attributes.class "content" ] (Dict.map viewQuery model.queries |> Dict.values)
+        , Html.div [ Attributes.class "subtitle" ] [ Html.text model.connectionString ]
+        , Html.div [ Attributes.class "content" ] (Dict.map (viewQuery model) model.queries |> Dict.values)
+        , Html.input [ Attributes.id "wrapCheckbox", Attributes.class "wrapCheckbox", Attributes.type_ "checkbox", Attributes.checked model.wrap, Events.onCheck Model.UpdateWrap ] []
+        , Html.label [ Attributes.for "wrapCheckbox", Attributes.class "wrapLabel" ] [ Html.text "wrap" ]
+        , Html.br [] []
         , Html.text "sleep time (ms):"
         , Html.input [ Attributes.id "sleepTime", Attributes.class "sleepInput", Attributes.value (String.fromFloat model.sleepTime), Events.onInput Model.UpdateSleepTime ] []
         , Html.br [] []
@@ -24,8 +28,8 @@ viewBody model =
         ]
 
 
-viewQuery : Int -> Model.Query -> Html.Html Model.Msg
-viewQuery id query =
+viewQuery : Model.Model -> Int -> Model.Query -> Html.Html Model.Msg
+viewQuery model id query =
     let
         htmlId =
             "query" ++ String.fromInt id
@@ -37,21 +41,29 @@ viewQuery id query =
         , Html.input [ Attributes.id ("watch_" ++ htmlId), Attributes.class "watchCheckbox", Attributes.type_ "checkbox", Attributes.checked query.watch, Events.onCheck (Model.UpdateQueryWatch id) ] []
         , Html.label [ Attributes.for ("watch_" ++ htmlId), Attributes.class "watchLabel" ] [ Html.text "watch" ]
         , Html.div [ Attributes.id ("output_" ++ htmlId), Attributes.class "output" ]
-            [ viewQueryResult query.result
+            [ viewQueryResult model query.result
             ]
         ]
 
 
-viewQueryResult : Result Model.QueryError Model.QueryResult -> Html.Html Model.Msg
-viewQueryResult result =
+viewQueryResult : Model.Model -> Result Model.QueryError Model.QueryResult -> Html.Html Model.Msg
+viewQueryResult model result =
     case result of
         Err error ->
             Html.pre [] [ Html.text (error.message ++ "\n" ++ error.severity ++ " " ++ error.code) ]
 
         Ok success ->
+            let
+                class =
+                    if model.wrap then
+                        "wrap"
+
+                    else
+                        "nowrap"
+            in
             Html.div []
                 [ Html.text (String.fromInt success.count)
-                , Html.table []
+                , Html.table [ Attributes.class class ]
                     (viewQueryResultHeaderRow success.columns
                         :: List.map viewQueryResultDataRow success.rows
                     )

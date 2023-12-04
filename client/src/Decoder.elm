@@ -1,10 +1,10 @@
 module Decoder exposing (..)
 
+import Debug
 import Json.Decode as Decode
 import Json.Decode.Field as Field
 import Json.Encode as Encode
 import Model
-import Debug
 
 resultDecoder : Decode.Decoder (Result Model.QueryError Model.QueryResult)
 resultDecoder =

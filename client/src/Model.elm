@@ -29,6 +29,8 @@ type alias Model =
     { queries : Dict.Dict Int Query
     , nextId : Int
     , sleepTime : Float
+    , connectionString : String
+    , wrap : Bool
     }
 
 
@@ -45,6 +47,8 @@ emptyModel =
     { queries = Dict.singleton 0 emptyQuery
     , nextId = 1
     , sleepTime = 1000
+    , connectionString = ""
+    , wrap = False
     }
 
 
@@ -54,5 +58,7 @@ type Msg
     | UpdateQueryWatch Int Bool
     | UpdateQueryText Int String
     | UpdateQueryResult Int (Result Http.Error (Result QueryError QueryResult))
+    | UpdateConnectionString (Result Http.Error String)
+    | UpdateWrap Bool
     | ExecuteQuery Int
     | UpdateSleepTime String

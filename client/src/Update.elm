@@ -77,6 +77,16 @@ update msg model =
                 Nothing ->
                     ( model, Cmd.none )
 
+        Model.UpdateConnectionString httpResult ->
+            let
+                connectionString =
+                    parseConnectionString httpResult
+            in
+            ( { model | connectionString = connectionString }, Cmd.none )
+
+        Model.UpdateWrap wrap ->
+            ( { model | wrap = wrap }, Cmd.none )
+
         Model.RemoveQuery id ->
             let
                 maybeQuery =
@@ -159,3 +169,27 @@ parseErrorString result =
 
         Ok value ->
             ""
+
+
+parseConnectionString : Result Http.Error String -> String
+parseConnectionString result =
+    case result of
+        Err error ->
+            case error of
+                Http.BadUrl url ->
+                    "bad url: " ++ url
+
+                Http.Timeout ->
+                    "timeout"
+
+                Http.NetworkError ->
+                    "network error"
+
+                Http.BadStatus status ->
+                    "bad status: " ++ String.fromInt status
+
+                Http.BadBody body ->
+                    "bad body: " ++ body
+
+        Ok value ->
+            value

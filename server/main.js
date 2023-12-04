@@ -9,6 +9,12 @@ process.on('SIGINT', function() {
 const app = express();
 app.use(express.static('../html'));
 app.use(express.json());
+app.get('/connectionString', (req, res) => {
+    const data = `postgres://${process.env.PGHOST}:${process.env.PGPORT}/${process.env.PGDATABASE}`
+    res.statusCode = 200;
+    res.setHeader('Content-Type', 'text/plain')
+    res.end(data)
+})
 app.post('/postgres', (req, res) => {
     console.log("====================");
     const query = req.body.query;

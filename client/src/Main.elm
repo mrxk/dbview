@@ -2,6 +2,7 @@ module Main exposing (..)
 
 import Browser
 import Dict
+import Http
 import Model
 import Update
 import View
@@ -19,7 +20,10 @@ main =
 init : Maybe String -> ( Model.Model, Cmd Model.Msg )
 init _ =
     ( Model.emptyModel
-    , Cmd.none
+    , Http.get
+        { url = "/connectionString"
+        , expect = Http.expectString Model.UpdateConnectionString
+        }
     )
 
 
