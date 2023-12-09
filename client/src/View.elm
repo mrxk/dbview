@@ -1,9 +1,11 @@
 module View exposing (..)
 
+import Decoder
 import Dict
 import Html
 import Html.Attributes as Attributes
 import Html.Events as Events
+import Json.Encode as Encode
 import Model
 
 
@@ -15,7 +17,9 @@ view model =
 viewBody : Model.Model -> Html.Html Model.Msg
 viewBody model =
     Html.div []
-        [ Html.h1 [ Attributes.class "title" ] [ Html.text "DBView" ]
+        [ Html.div [ Attributes.class "modelButton", Events.onClick (Model.UpdateShowModel True) ] [ Html.text "model" ]
+        , Html.br [] []
+        , Html.h1 [ Attributes.class "title" ] [ Html.text "DBView" ]
         , Html.div [ Attributes.class "subtitle" ] [ Html.text model.connectionString ]
         , Html.div [ Attributes.class "content" ] (Dict.map (viewQuery model) model.queries |> Dict.values)
         , Html.input [ Attributes.id "wrapCheckbox", Attributes.class "wrapCheckbox", Attributes.type_ "checkbox", Attributes.checked model.wrap, Events.onCheck Model.UpdateWrap ] []
@@ -25,6 +29,7 @@ viewBody model =
         , Html.input [ Attributes.id "sleepTime", Attributes.class "sleepInput", Attributes.value (String.fromFloat model.sleepTime), Events.onInput Model.UpdateSleepTime ] []
         , Html.br [] []
         , Html.button [ Attributes.id "add", Attributes.class "addQueryButton", Events.onClick Model.AddQuery ] [ Html.text "add" ]
+        , viewModelDialog model
         ]
 
 
@@ -78,3 +83,22 @@ viewQueryResultHeaderRow headers =
 viewQueryResultDataRow : List String -> Html.Html Model.Msg
 viewQueryResultDataRow values =
     Html.tr [] (List.map (\v -> Html.td [] [ Html.text v ]) values)
+
+
+viewModelDialog : Model.Model -> Html.Html Model.Msg
+viewModelDialog model =
+    if model.showModel then
+        Html.div [ Attributes.class "dialogContainer" ]
+            [ Html.node "dialog"
+                [ Attributes.class "dialog", Attributes.attribute "open" "" ]
+                [ Html.textarea [ Attributes.class "modelInput", Events.onInput Model.UpdateNewModelJSON ]
+                    [ Html.text model.newModelJSON
+                    ]
+                , Html.br [] []
+                , Html.button [ Attributes.class "modelOk", Events.onClick Model.ApplyNewModelJSON ] [ Html.text "OK" ]
+                , Html.button [ Attributes.class "modelCancel", Events.onClick (Model.UpdateShowModel False) ] [ Html.text "Cancel" ]
+                ]
+            ]
+
+    else
+        Html.div [ Attributes.class "dialog" ] []

@@ -30,9 +30,36 @@ th, td {
 
 .output {
   width: 100%;
-  height: 25rem;
+  height: 10rem;
   overflow: auto;
   resize: vertical;
+}
+
+.dialogContainer {
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  width: 100%;
+  height: 700px;
+  display: flex;
+  justify-content: center;
+}
+
+.dialog {
+  position: relative;
+}
+
+.modelInput {
+  width: 500px;
+  height: 500px;
+}
+
+.modelButton {
+  float: right;
+  cursor: pointer;
+  border: 1px solid black;
+  padding: 2px;
+  margin-right: 2rem;
 }
 
 .closeButton {

@@ -4,7 +4,6 @@ import Decoder
 import Dict
 import Http
 import Json.Decode as Decode
-import Json.Decode.Field as Field
 import Json.Encode as Encode
 import Model
 import Process
@@ -86,6 +85,27 @@ update msg model =
 
         Model.UpdateWrap wrap ->
             ( { model | wrap = wrap }, Cmd.none )
+
+        Model.UpdateShowModel showModel ->
+            let
+                newModelJSON =
+                    if showModel then
+                        Encode.encode 4 (Decoder.modelEncoder model)
+
+                    else
+                        ""
+            in
+            ( { model | showModel = showModel, newModelJSON = newModelJSON }, Cmd.none )
+
+        Model.UpdateNewModelJSON newModelJSON ->
+            ( { model | newModelJSON = newModelJSON }, Cmd.none )
+
+        Model.ApplyNewModelJSON ->
+            let
+                newModel =
+                    Decode.decodeString Decoder.modelDecoder model.newModelJSON
+            in
+            ( Result.withDefault Model.emptyModel newModel, Cmd.none )
 
         Model.RemoveQuery id ->
             let

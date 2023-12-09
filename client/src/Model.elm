@@ -31,6 +31,8 @@ type alias Model =
     , sleepTime : Float
     , connectionString : String
     , wrap : Bool
+    , showModel : Bool
+    , newModelJSON : String
     }
 
 
@@ -49,6 +51,8 @@ emptyModel =
     , sleepTime = 1000
     , connectionString = ""
     , wrap = False
+    , showModel = False
+    , newModelJSON = ""
     }
 
 
@@ -59,6 +63,9 @@ type Msg
     | UpdateQueryText Int String
     | UpdateQueryResult Int (Result Http.Error (Result QueryError QueryResult))
     | UpdateConnectionString (Result Http.Error String)
+    | UpdateShowModel Bool
+    | UpdateNewModelJSON String
+    | ApplyNewModelJSON
     | UpdateWrap Bool
     | ExecuteQuery Int
     | UpdateSleepTime String

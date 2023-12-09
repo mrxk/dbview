@@ -4655,8 +4655,10 @@ var elm$core$Dict$singleton = F2(
 	});
 var author$project$Model$emptyModel = {
 	connectionString: '',
+	newModelJSON: '',
 	nextId: 1,
 	queries: A2(elm$core$Dict$singleton, 0, author$project$Model$emptyQuery),
+	showModel: false,
 	sleepTime: 1000,
 	wrap: false
 };
@@ -5932,21 +5934,22 @@ var elm$core$Platform$Sub$none = elm$core$Platform$Sub$batch(_List_Nil);
 var author$project$Main$subscriptions = function (_n0) {
 	return elm$core$Platform$Sub$none;
 };
-var author$project$Model$ExecuteQuery = function (a) {
-	return {$: 'ExecuteQuery', a: a};
-};
-var elm$core$Debug$log = _Debug_log;
-var elm$core$String$fromFloat = _String_fromNumber;
-var elm$json$Json$Decode$float = _Json_decodeFloat;
-var elm$json$Json$Decode$int = _Json_decodeInt;
-var elm$json$Json$Decode$list = _Json_decodeList;
-var elm$json$Json$Decode$map = _Json_map1;
-var elm$json$Json$Decode$null = _Json_decodeNull;
-var elm$json$Json$Decode$oneOf = _Json_oneOf;
+var elm$core$Maybe$withDefault = F2(
+	function (_default, maybe) {
+		if (maybe.$ === 'Just') {
+			var value = maybe.a;
+			return value;
+		} else {
+			return _default;
+		}
+	});
+var elm$json$Json$Decode$bool = _Json_decodeBool;
 var elm$json$Json$Decode$string = _Json_decodeString;
 var elm$json$Json$Decode$succeed = _Json_succeed;
 var elm$json$Json$Decode$andThen = _Json_andThen;
 var elm$json$Json$Decode$field = _Json_decodeField;
+var elm$json$Json$Decode$map = _Json_map1;
+var elm$json$Json$Decode$oneOf = _Json_oneOf;
 var elm$json$Json$Decode$maybe = function (decoder) {
 	return elm$json$Json$Decode$oneOf(
 		_List_fromArray(
@@ -5963,6 +5966,179 @@ var webbhuset$elm_json_decode$Json$Decode$Field$attempt = F3(
 			elm$json$Json$Decode$maybe(
 				A2(elm$json$Json$Decode$field, fieldName, valueDecoder)));
 	});
+var author$project$Decoder$jsonQueryDecoder = A3(
+	webbhuset$elm_json_decode$Json$Decode$Field$attempt,
+	'text',
+	elm$json$Json$Decode$string,
+	function (maybeText) {
+		return A3(
+			webbhuset$elm_json_decode$Json$Decode$Field$attempt,
+			'watch',
+			elm$json$Json$Decode$bool,
+			function (maybeWatch) {
+				return elm$json$Json$Decode$succeed(
+					{
+						text: A2(elm$core$Maybe$withDefault, 'failed', maybeText),
+						watch: A2(elm$core$Maybe$withDefault, false, maybeWatch)
+					});
+			});
+	});
+var author$project$Decoder$queryTupleConstructor = F2(
+	function (i, jsonQuery) {
+		var _default = author$project$Model$emptyQuery;
+		return _Utils_Tuple2(
+			i,
+			_Utils_update(
+				_default,
+				{text: jsonQuery.text, watch: jsonQuery.watch}));
+	});
+var elm$core$Dict$fromList = function (assocs) {
+	return A3(
+		elm$core$List$foldl,
+		F2(
+			function (_n0, dict) {
+				var key = _n0.a;
+				var value = _n0.b;
+				return A3(elm$core$Dict$insert, key, value, dict);
+			}),
+		elm$core$Dict$empty,
+		assocs);
+};
+var elm$core$Maybe$map = F2(
+	function (f, maybe) {
+		if (maybe.$ === 'Just') {
+			var value = maybe.a;
+			return elm$core$Maybe$Just(
+				f(value));
+		} else {
+			return elm$core$Maybe$Nothing;
+		}
+	});
+var elm$json$Json$Decode$float = _Json_decodeFloat;
+var elm$json$Json$Decode$int = _Json_decodeInt;
+var elm$json$Json$Decode$list = _Json_decodeList;
+var author$project$Decoder$modelDecoder = A3(
+	webbhuset$elm_json_decode$Json$Decode$Field$attempt,
+	'queries',
+	elm$json$Json$Decode$list(author$project$Decoder$jsonQueryDecoder),
+	function (maybeJSONQueries) {
+		return A3(
+			webbhuset$elm_json_decode$Json$Decode$Field$attempt,
+			'nextId',
+			elm$json$Json$Decode$int,
+			function (maybeNextId) {
+				return A3(
+					webbhuset$elm_json_decode$Json$Decode$Field$attempt,
+					'sleepTime',
+					elm$json$Json$Decode$float,
+					function (maybeSleepTime) {
+						return A3(
+							webbhuset$elm_json_decode$Json$Decode$Field$attempt,
+							'wrap',
+							elm$json$Json$Decode$bool,
+							function (maybeWrap) {
+								return A3(
+									webbhuset$elm_json_decode$Json$Decode$Field$attempt,
+									'showModel',
+									elm$json$Json$Decode$bool,
+									function (maybeShowModel) {
+										var maybeJSONQueryTuples = A2(
+											elm$core$Maybe$map,
+											function (l) {
+												return A2(elm$core$List$indexedMap, author$project$Decoder$queryTupleConstructor, l);
+											},
+											maybeJSONQueries);
+										var maybeQueries = A2(
+											elm$core$Maybe$map,
+											function (t) {
+												return elm$core$Dict$fromList(t);
+											},
+											maybeJSONQueryTuples);
+										return elm$json$Json$Decode$succeed(
+											{
+												connectionString: '',
+												newModelJSON: '',
+												nextId: A2(elm$core$Maybe$withDefault, 1, maybeNextId),
+												queries: A2(
+													elm$core$Maybe$withDefault,
+													A2(elm$core$Dict$singleton, 0, author$project$Model$emptyQuery),
+													maybeQueries),
+												showModel: A2(elm$core$Maybe$withDefault, false, maybeShowModel),
+												sleepTime: A2(elm$core$Maybe$withDefault, 1000, maybeSleepTime),
+												wrap: A2(elm$core$Maybe$withDefault, false, maybeWrap)
+											});
+									});
+							});
+					});
+			});
+	});
+var author$project$Decoder$collectQueries = F3(
+	function (_n0, query, queries) {
+		return A2(
+			elm$core$List$cons,
+			{text: query.text, watch: query.watch},
+			queries);
+	});
+var elm$json$Json$Encode$bool = _Json_wrap;
+var elm$json$Json$Encode$float = _Json_wrap;
+var elm$json$Json$Encode$list = F2(
+	function (func, entries) {
+		return _Json_wrap(
+			A3(
+				elm$core$List$foldl,
+				_Json_addEntry(func),
+				_Json_emptyArray(_Utils_Tuple0),
+				entries));
+	});
+var elm$json$Json$Encode$object = function (pairs) {
+	return _Json_wrap(
+		A3(
+			elm$core$List$foldl,
+			F2(
+				function (_n0, obj) {
+					var k = _n0.a;
+					var v = _n0.b;
+					return A3(_Json_addField, k, v, obj);
+				}),
+			_Json_emptyObject(_Utils_Tuple0),
+			pairs));
+};
+var elm$json$Json$Encode$string = _Json_wrap;
+var author$project$Decoder$modelEncoder = function (model) {
+	var queries = A3(elm$core$Dict$foldr, author$project$Decoder$collectQueries, _List_Nil, model.queries);
+	return elm$json$Json$Encode$object(
+		_List_fromArray(
+			[
+				_Utils_Tuple2(
+				'queries',
+				A2(
+					elm$json$Json$Encode$list,
+					function (o) {
+						return elm$json$Json$Encode$object(
+							_List_fromArray(
+								[
+									_Utils_Tuple2(
+									'text',
+									elm$json$Json$Encode$string(o.text)),
+									_Utils_Tuple2(
+									'watch',
+									elm$json$Json$Encode$bool(o.watch))
+								]));
+					},
+					queries)),
+				_Utils_Tuple2(
+				'sleepTime',
+				elm$json$Json$Encode$float(model.sleepTime)),
+				_Utils_Tuple2(
+				'wrap',
+				elm$json$Json$Encode$bool(model.wrap))
+			]));
+};
+var author$project$Model$ExecuteQuery = function (a) {
+	return {$: 'ExecuteQuery', a: a};
+};
+var elm$core$String$fromFloat = _String_fromNumber;
+var elm$json$Json$Decode$null = _Json_decodeNull;
 var author$project$Decoder$resultDecoder = A3(
 	webbhuset$elm_json_decode$Json$Decode$Field$attempt,
 	'message',
@@ -6031,10 +6207,6 @@ var author$project$Decoder$resultDecoder = A3(
 															elm$core$Result$Err(
 																{code: code, message: message, severity: severity}));
 													} else {
-														var _n3 = A2(elm$core$Debug$log, 'maybeSeverity', maybeSeverity);
-														var _n4 = A2(elm$core$Debug$log, 'maybeCode', maybeCode);
-														var _n5 = A2(elm$core$Debug$log, 'maybeColumns', maybeColumns);
-														var _n6 = A2(elm$core$Debug$log, 'maybeRows', maybeRows);
 														return elm$json$Json$Decode$succeed(
 															elm$core$Result$Err(
 																{code: '', message: 'Invalid JSON', severity: ''}));
@@ -6074,20 +6246,6 @@ var elm$http$Http$post = function (r) {
 	return elm$http$Http$request(
 		{body: r.body, expect: r.expect, headers: _List_Nil, method: 'POST', timeout: elm$core$Maybe$Nothing, tracker: elm$core$Maybe$Nothing, url: r.url});
 };
-var elm$json$Json$Encode$object = function (pairs) {
-	return _Json_wrap(
-		A3(
-			elm$core$List$foldl,
-			F2(
-				function (_n0, obj) {
-					var k = _n0.a;
-					var v = _n0.b;
-					return A3(_Json_addField, k, v, obj);
-				}),
-			_Json_emptyObject(_Utils_Tuple0),
-			pairs));
-};
-var elm$json$Json$Encode$string = _Json_wrap;
 var author$project$Update$doQuery = F2(
 	function (id, text) {
 		return elm$http$Http$post(
@@ -6160,6 +6318,15 @@ var elm$core$Basics$always = F2(
 var elm$core$Platform$Cmd$batch = _Platform_batch;
 var elm$core$Platform$Cmd$none = elm$core$Platform$Cmd$batch(_List_Nil);
 var elm$core$Process$sleep = _Process_sleep;
+var elm$core$Result$withDefault = F2(
+	function (def, result) {
+		if (result.$ === 'Ok') {
+			var a = result.a;
+			return a;
+		} else {
+			return def;
+		}
+	});
 var elm$core$String$toFloat = _String_toFloat;
 var elm$core$Task$Perform = function (a) {
 	return {$: 'Perform', a: a};
@@ -6332,6 +6499,29 @@ var author$project$Update$update = F2(
 						model,
 						{wrap: wrap}),
 					elm$core$Platform$Cmd$none);
+			case 'UpdateShowModel':
+				var showModel = msg.a;
+				var newModelJSON = showModel ? A2(
+					elm$json$Json$Encode$encode,
+					4,
+					author$project$Decoder$modelEncoder(model)) : '';
+				return _Utils_Tuple2(
+					_Utils_update(
+						model,
+						{newModelJSON: newModelJSON, showModel: showModel}),
+					elm$core$Platform$Cmd$none);
+			case 'UpdateNewModelJSON':
+				var newModelJSON = msg.a;
+				return _Utils_Tuple2(
+					_Utils_update(
+						model,
+						{newModelJSON: newModelJSON}),
+					elm$core$Platform$Cmd$none);
+			case 'ApplyNewModelJSON':
+				var newModel = A2(elm$json$Json$Decode$decodeString, author$project$Decoder$modelDecoder, model.newModelJSON);
+				return _Utils_Tuple2(
+					A2(elm$core$Result$withDefault, author$project$Model$emptyModel, newModel),
+					elm$core$Platform$Cmd$none);
 			case 'RemoveQuery':
 				var id = msg.a;
 				var maybeQuery = A2(elm$core$Dict$get, id, model.queries);
@@ -6385,23 +6575,19 @@ var author$project$Update$update = F2(
 		}
 	});
 var author$project$Model$AddQuery = {$: 'AddQuery'};
+var author$project$Model$UpdateShowModel = function (a) {
+	return {$: 'UpdateShowModel', a: a};
+};
 var author$project$Model$UpdateSleepTime = function (a) {
 	return {$: 'UpdateSleepTime', a: a};
 };
 var author$project$Model$UpdateWrap = function (a) {
 	return {$: 'UpdateWrap', a: a};
 };
-var author$project$Model$RemoveQuery = function (a) {
-	return {$: 'RemoveQuery', a: a};
+var author$project$Model$ApplyNewModelJSON = {$: 'ApplyNewModelJSON'};
+var author$project$Model$UpdateNewModelJSON = function (a) {
+	return {$: 'UpdateNewModelJSON', a: a};
 };
-var author$project$Model$UpdateQueryText = F2(
-	function (a, b) {
-		return {$: 'UpdateQueryText', a: a, b: b};
-	});
-var author$project$Model$UpdateQueryWatch = F2(
-	function (a, b) {
-		return {$: 'UpdateQueryWatch', a: a, b: b};
-	});
 var elm$json$Json$Decode$map2 = _Json_map2;
 var elm$virtual_dom$VirtualDom$toHandlerInt = function (handler) {
 	switch (handler.$) {
@@ -6415,9 +6601,156 @@ var elm$virtual_dom$VirtualDom$toHandlerInt = function (handler) {
 			return 3;
 	}
 };
-var elm$html$Html$td = _VirtualDom_node('td');
+var elm$html$Html$br = _VirtualDom_node('br');
+var elm$html$Html$button = _VirtualDom_node('button');
+var elm$html$Html$div = _VirtualDom_node('div');
+var elm$virtual_dom$VirtualDom$node = function (tag) {
+	return _VirtualDom_node(
+		_VirtualDom_noScript(tag));
+};
+var elm$html$Html$node = elm$virtual_dom$VirtualDom$node;
 var elm$virtual_dom$VirtualDom$text = _VirtualDom_text;
 var elm$html$Html$text = elm$virtual_dom$VirtualDom$text;
+var elm$html$Html$textarea = _VirtualDom_node('textarea');
+var elm$virtual_dom$VirtualDom$attribute = F2(
+	function (key, value) {
+		return A2(
+			_VirtualDom_attribute,
+			_VirtualDom_noOnOrFormAction(key),
+			_VirtualDom_noJavaScriptOrHtmlUri(value));
+	});
+var elm$html$Html$Attributes$attribute = elm$virtual_dom$VirtualDom$attribute;
+var elm$html$Html$Attributes$stringProperty = F2(
+	function (key, string) {
+		return A2(
+			_VirtualDom_property,
+			key,
+			elm$json$Json$Encode$string(string));
+	});
+var elm$html$Html$Attributes$class = elm$html$Html$Attributes$stringProperty('className');
+var elm$virtual_dom$VirtualDom$Normal = function (a) {
+	return {$: 'Normal', a: a};
+};
+var elm$virtual_dom$VirtualDom$on = _VirtualDom_on;
+var elm$html$Html$Events$on = F2(
+	function (event, decoder) {
+		return A2(
+			elm$virtual_dom$VirtualDom$on,
+			event,
+			elm$virtual_dom$VirtualDom$Normal(decoder));
+	});
+var elm$html$Html$Events$onClick = function (msg) {
+	return A2(
+		elm$html$Html$Events$on,
+		'click',
+		elm$json$Json$Decode$succeed(msg));
+};
+var elm$html$Html$Events$alwaysStop = function (x) {
+	return _Utils_Tuple2(x, true);
+};
+var elm$virtual_dom$VirtualDom$MayStopPropagation = function (a) {
+	return {$: 'MayStopPropagation', a: a};
+};
+var elm$html$Html$Events$stopPropagationOn = F2(
+	function (event, decoder) {
+		return A2(
+			elm$virtual_dom$VirtualDom$on,
+			event,
+			elm$virtual_dom$VirtualDom$MayStopPropagation(decoder));
+	});
+var elm$json$Json$Decode$at = F2(
+	function (fields, decoder) {
+		return A3(elm$core$List$foldr, elm$json$Json$Decode$field, decoder, fields);
+	});
+var elm$html$Html$Events$targetValue = A2(
+	elm$json$Json$Decode$at,
+	_List_fromArray(
+		['target', 'value']),
+	elm$json$Json$Decode$string);
+var elm$html$Html$Events$onInput = function (tagger) {
+	return A2(
+		elm$html$Html$Events$stopPropagationOn,
+		'input',
+		A2(
+			elm$json$Json$Decode$map,
+			elm$html$Html$Events$alwaysStop,
+			A2(elm$json$Json$Decode$map, tagger, elm$html$Html$Events$targetValue)));
+};
+var author$project$View$viewModelDialog = function (model) {
+	return model.showModel ? A2(
+		elm$html$Html$div,
+		_List_fromArray(
+			[
+				elm$html$Html$Attributes$class('dialogContainer')
+			]),
+		_List_fromArray(
+			[
+				A3(
+				elm$html$Html$node,
+				'dialog',
+				_List_fromArray(
+					[
+						elm$html$Html$Attributes$class('dialog'),
+						A2(elm$html$Html$Attributes$attribute, 'open', '')
+					]),
+				_List_fromArray(
+					[
+						A2(
+						elm$html$Html$textarea,
+						_List_fromArray(
+							[
+								elm$html$Html$Attributes$class('modelInput'),
+								elm$html$Html$Events$onInput(author$project$Model$UpdateNewModelJSON)
+							]),
+						_List_fromArray(
+							[
+								elm$html$Html$text(model.newModelJSON)
+							])),
+						A2(elm$html$Html$br, _List_Nil, _List_Nil),
+						A2(
+						elm$html$Html$button,
+						_List_fromArray(
+							[
+								elm$html$Html$Attributes$class('modelOk'),
+								elm$html$Html$Events$onClick(author$project$Model$ApplyNewModelJSON)
+							]),
+						_List_fromArray(
+							[
+								elm$html$Html$text('OK')
+							])),
+						A2(
+						elm$html$Html$button,
+						_List_fromArray(
+							[
+								elm$html$Html$Attributes$class('modelCancel'),
+								elm$html$Html$Events$onClick(
+								author$project$Model$UpdateShowModel(false))
+							]),
+						_List_fromArray(
+							[
+								elm$html$Html$text('Cancel')
+							]))
+					]))
+			])) : A2(
+		elm$html$Html$div,
+		_List_fromArray(
+			[
+				elm$html$Html$Attributes$class('dialog')
+			]),
+		_List_Nil);
+};
+var author$project$Model$RemoveQuery = function (a) {
+	return {$: 'RemoveQuery', a: a};
+};
+var author$project$Model$UpdateQueryText = F2(
+	function (a, b) {
+		return {$: 'UpdateQueryText', a: a, b: b};
+	});
+var author$project$Model$UpdateQueryWatch = F2(
+	function (a, b) {
+		return {$: 'UpdateQueryWatch', a: a, b: b};
+	});
+var elm$html$Html$td = _VirtualDom_node('td');
 var elm$html$Html$tr = _VirtualDom_node('tr');
 var author$project$View$viewQueryResultDataRow = function (values) {
 	return A2(
@@ -6454,17 +6787,8 @@ var author$project$View$viewQueryResultHeaderRow = function (headers) {
 			},
 			headers));
 };
-var elm$html$Html$div = _VirtualDom_node('div');
 var elm$html$Html$pre = _VirtualDom_node('pre');
 var elm$html$Html$table = _VirtualDom_node('table');
-var elm$html$Html$Attributes$stringProperty = F2(
-	function (key, string) {
-		return A2(
-			_VirtualDom_property,
-			key,
-			elm$json$Json$Encode$string(string));
-	});
-var elm$html$Html$Attributes$class = elm$html$Html$Attributes$stringProperty('className');
 var author$project$View$viewQueryResult = F2(
 	function (model, result) {
 		if (result.$ === 'Err') {
@@ -6499,11 +6823,8 @@ var author$project$View$viewQueryResult = F2(
 					]));
 		}
 	});
-var elm$html$Html$button = _VirtualDom_node('button');
 var elm$html$Html$input = _VirtualDom_node('input');
 var elm$html$Html$label = _VirtualDom_node('label');
-var elm$html$Html$textarea = _VirtualDom_node('textarea');
-var elm$json$Json$Encode$bool = _Json_wrap;
 var elm$html$Html$Attributes$boolProperty = F2(
 	function (key, bool) {
 		return A2(
@@ -6516,22 +6837,6 @@ var elm$html$Html$Attributes$for = elm$html$Html$Attributes$stringProperty('html
 var elm$html$Html$Attributes$id = elm$html$Html$Attributes$stringProperty('id');
 var elm$html$Html$Attributes$type_ = elm$html$Html$Attributes$stringProperty('type');
 var elm$html$Html$Attributes$value = elm$html$Html$Attributes$stringProperty('value');
-var elm$virtual_dom$VirtualDom$Normal = function (a) {
-	return {$: 'Normal', a: a};
-};
-var elm$virtual_dom$VirtualDom$on = _VirtualDom_on;
-var elm$html$Html$Events$on = F2(
-	function (event, decoder) {
-		return A2(
-			elm$virtual_dom$VirtualDom$on,
-			event,
-			elm$virtual_dom$VirtualDom$Normal(decoder));
-	});
-var elm$json$Json$Decode$at = F2(
-	function (fields, decoder) {
-		return A3(elm$core$List$foldr, elm$json$Json$Decode$field, decoder, fields);
-	});
-var elm$json$Json$Decode$bool = _Json_decodeBool;
 var elm$html$Html$Events$targetChecked = A2(
 	elm$json$Json$Decode$at,
 	_List_fromArray(
@@ -6542,39 +6847,6 @@ var elm$html$Html$Events$onCheck = function (tagger) {
 		elm$html$Html$Events$on,
 		'change',
 		A2(elm$json$Json$Decode$map, tagger, elm$html$Html$Events$targetChecked));
-};
-var elm$html$Html$Events$onClick = function (msg) {
-	return A2(
-		elm$html$Html$Events$on,
-		'click',
-		elm$json$Json$Decode$succeed(msg));
-};
-var elm$html$Html$Events$alwaysStop = function (x) {
-	return _Utils_Tuple2(x, true);
-};
-var elm$virtual_dom$VirtualDom$MayStopPropagation = function (a) {
-	return {$: 'MayStopPropagation', a: a};
-};
-var elm$html$Html$Events$stopPropagationOn = F2(
-	function (event, decoder) {
-		return A2(
-			elm$virtual_dom$VirtualDom$on,
-			event,
-			elm$virtual_dom$VirtualDom$MayStopPropagation(decoder));
-	});
-var elm$html$Html$Events$targetValue = A2(
-	elm$json$Json$Decode$at,
-	_List_fromArray(
-		['target', 'value']),
-	elm$json$Json$Decode$string);
-var elm$html$Html$Events$onInput = function (tagger) {
-	return A2(
-		elm$html$Html$Events$stopPropagationOn,
-		'input',
-		A2(
-			elm$json$Json$Decode$map,
-			elm$html$Html$Events$alwaysStop,
-			A2(elm$json$Json$Decode$map, tagger, elm$html$Html$Events$targetValue)));
 };
 var author$project$View$viewQuery = F3(
 	function (model, id, query) {
@@ -6690,7 +6962,6 @@ var elm$core$Dict$values = function (dict) {
 		_List_Nil,
 		dict);
 };
-var elm$html$Html$br = _VirtualDom_node('br');
 var elm$html$Html$h1 = _VirtualDom_node('h1');
 var author$project$View$viewBody = function (model) {
 	return A2(
@@ -6698,6 +6969,19 @@ var author$project$View$viewBody = function (model) {
 		_List_Nil,
 		_List_fromArray(
 			[
+				A2(
+				elm$html$Html$div,
+				_List_fromArray(
+					[
+						elm$html$Html$Attributes$class('modelButton'),
+						elm$html$Html$Events$onClick(
+						author$project$Model$UpdateShowModel(true))
+					]),
+				_List_fromArray(
+					[
+						elm$html$Html$text('model')
+					])),
+				A2(elm$html$Html$br, _List_Nil, _List_Nil),
 				A2(
 				elm$html$Html$h1,
 				_List_fromArray(
@@ -6776,7 +7060,8 @@ var author$project$View$viewBody = function (model) {
 				_List_fromArray(
 					[
 						elm$html$Html$text('add')
-					]))
+					])),
+				author$project$View$viewModelDialog(model)
 			]));
 };
 var author$project$View$view = function (model) {
