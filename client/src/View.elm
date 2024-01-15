@@ -22,13 +22,15 @@ viewBody model =
         , Html.h1 [ Attributes.class "title" ] [ Html.text "DBView" ]
         , Html.div [ Attributes.class "subtitle" ] [ Html.text model.connectionString ]
         , Html.div [ Attributes.class "content" ] (Dict.map (viewQuery model) model.queries |> Dict.values)
-        , Html.input [ Attributes.id "wrapCheckbox", Attributes.class "wrapCheckbox", Attributes.type_ "checkbox", Attributes.checked model.wrap, Events.onCheck Model.UpdateWrap ] []
-        , Html.label [ Attributes.for "wrapCheckbox", Attributes.class "wrapLabel" ] [ Html.text "wrap" ]
-        , Html.br [] []
-        , Html.text "sleep time (ms):"
-        , Html.input [ Attributes.id "sleepTime", Attributes.class "sleepInput", Attributes.value (String.fromFloat model.sleepTime), Events.onInput Model.UpdateSleepTime ] []
-        , Html.br [] []
-        , Html.button [ Attributes.id "add", Attributes.class "addQueryButton", Events.onClick Model.AddQuery ] [ Html.text "add" ]
+        , Html.div [ Attributes.class "footer" ]
+            [ Html.input [ Attributes.id "wrapCheckbox", Attributes.class "wrapCheckbox", Attributes.type_ "checkbox", Attributes.checked model.wrap, Events.onCheck Model.UpdateWrap ] []
+            , Html.label [ Attributes.for "wrapCheckbox", Attributes.class "wrapLabel" ] [ Html.text "wrap" ]
+            , Html.br [] []
+            , Html.text "sleep time (ms):"
+            , Html.input [ Attributes.id "sleepTime", Attributes.class "sleepInput", Attributes.value (String.fromFloat model.sleepTime), Events.onInput Model.UpdateSleepTime ] []
+            , Html.br [] []
+            , Html.button [ Attributes.id "add", Attributes.class "addQueryButton", Events.onClick Model.AddQuery ] [ Html.text "add" ]
+            ]
         , viewModelDialog model
         ]
 

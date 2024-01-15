@@ -7014,52 +7014,61 @@ var author$project$View$viewBody = function (model) {
 						author$project$View$viewQuery(model),
 						model.queries))),
 				A2(
-				elm$html$Html$input,
+				elm$html$Html$div,
 				_List_fromArray(
 					[
-						elm$html$Html$Attributes$id('wrapCheckbox'),
-						elm$html$Html$Attributes$class('wrapCheckbox'),
-						elm$html$Html$Attributes$type_('checkbox'),
-						elm$html$Html$Attributes$checked(model.wrap),
-						elm$html$Html$Events$onCheck(author$project$Model$UpdateWrap)
-					]),
-				_List_Nil),
-				A2(
-				elm$html$Html$label,
-				_List_fromArray(
-					[
-						elm$html$Html$Attributes$for('wrapCheckbox'),
-						elm$html$Html$Attributes$class('wrapLabel')
+						elm$html$Html$Attributes$class('footer')
 					]),
 				_List_fromArray(
 					[
-						elm$html$Html$text('wrap')
-					])),
-				A2(elm$html$Html$br, _List_Nil, _List_Nil),
-				elm$html$Html$text('sleep time (ms):'),
-				A2(
-				elm$html$Html$input,
-				_List_fromArray(
-					[
-						elm$html$Html$Attributes$id('sleepTime'),
-						elm$html$Html$Attributes$class('sleepInput'),
-						elm$html$Html$Attributes$value(
-						elm$core$String$fromFloat(model.sleepTime)),
-						elm$html$Html$Events$onInput(author$project$Model$UpdateSleepTime)
-					]),
-				_List_Nil),
-				A2(elm$html$Html$br, _List_Nil, _List_Nil),
-				A2(
-				elm$html$Html$button,
-				_List_fromArray(
-					[
-						elm$html$Html$Attributes$id('add'),
-						elm$html$Html$Attributes$class('addQueryButton'),
-						elm$html$Html$Events$onClick(author$project$Model$AddQuery)
-					]),
-				_List_fromArray(
-					[
-						elm$html$Html$text('add')
+						A2(
+						elm$html$Html$input,
+						_List_fromArray(
+							[
+								elm$html$Html$Attributes$id('wrapCheckbox'),
+								elm$html$Html$Attributes$class('wrapCheckbox'),
+								elm$html$Html$Attributes$type_('checkbox'),
+								elm$html$Html$Attributes$checked(model.wrap),
+								elm$html$Html$Events$onCheck(author$project$Model$UpdateWrap)
+							]),
+						_List_Nil),
+						A2(
+						elm$html$Html$label,
+						_List_fromArray(
+							[
+								elm$html$Html$Attributes$for('wrapCheckbox'),
+								elm$html$Html$Attributes$class('wrapLabel')
+							]),
+						_List_fromArray(
+							[
+								elm$html$Html$text('wrap')
+							])),
+						A2(elm$html$Html$br, _List_Nil, _List_Nil),
+						elm$html$Html$text('sleep time (ms):'),
+						A2(
+						elm$html$Html$input,
+						_List_fromArray(
+							[
+								elm$html$Html$Attributes$id('sleepTime'),
+								elm$html$Html$Attributes$class('sleepInput'),
+								elm$html$Html$Attributes$value(
+								elm$core$String$fromFloat(model.sleepTime)),
+								elm$html$Html$Events$onInput(author$project$Model$UpdateSleepTime)
+							]),
+						_List_Nil),
+						A2(elm$html$Html$br, _List_Nil, _List_Nil),
+						A2(
+						elm$html$Html$button,
+						_List_fromArray(
+							[
+								elm$html$Html$Attributes$id('add'),
+								elm$html$Html$Attributes$class('addQueryButton'),
+								elm$html$Html$Events$onClick(author$project$Model$AddQuery)
+							]),
+						_List_fromArray(
+							[
+								elm$html$Html$text('add')
+							]))
 					])),
 				author$project$View$viewModelDialog(model)
 			]));
