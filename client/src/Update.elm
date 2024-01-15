@@ -102,6 +102,9 @@ update msg model =
 
         Model.ApplyNewModelJSON ->
             let
+                currentConnectionString =
+                    model.connectionString
+
                 newModelResult =
                     Decode.decodeString Decoder.modelDecoder model.newModelJSON
 
@@ -111,7 +114,7 @@ update msg model =
                 newNextId =
                     Dict.size newModel.queries
             in
-            ( { newModel | nextId = newNextId }, Cmd.none )
+            ( { newModel | nextId = newNextId, connectionString = currentConnectionString }, Cmd.none )
 
         Model.RemoveQuery id ->
             let

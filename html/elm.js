@@ -6541,10 +6541,11 @@ var author$project$Update$update = F2(
 				var newModelResult = A2(elm$json$Json$Decode$decodeString, author$project$Decoder$modelDecoder, model.newModelJSON);
 				var newModel = A2(elm$core$Result$withDefault, author$project$Model$emptyModel, newModelResult);
 				var newNextId = elm$core$Dict$size(newModel.queries);
+				var currentConnectionString = model.connectionString;
 				return _Utils_Tuple2(
 					_Utils_update(
 						newModel,
-						{nextId: newNextId}),
+						{connectionString: currentConnectionString, nextId: newNextId}),
 					elm$core$Platform$Cmd$none);
 			case 'RemoveQuery':
 				var id = msg.a;
