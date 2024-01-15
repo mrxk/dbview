@@ -6315,6 +6315,26 @@ var elm$core$Basics$always = F2(
 	function (a, _n0) {
 		return a;
 	});
+var elm$core$Dict$sizeHelp = F2(
+	function (n, dict) {
+		sizeHelp:
+		while (true) {
+			if (dict.$ === 'RBEmpty_elm_builtin') {
+				return n;
+			} else {
+				var left = dict.d;
+				var right = dict.e;
+				var $temp$n = A2(elm$core$Dict$sizeHelp, n + 1, right),
+					$temp$dict = left;
+				n = $temp$n;
+				dict = $temp$dict;
+				continue sizeHelp;
+			}
+		}
+	});
+var elm$core$Dict$size = function (dict) {
+	return A2(elm$core$Dict$sizeHelp, 0, dict);
+};
 var elm$core$Platform$Cmd$batch = _Platform_batch;
 var elm$core$Platform$Cmd$none = elm$core$Platform$Cmd$batch(_List_Nil);
 var elm$core$Process$sleep = _Process_sleep;
@@ -6518,9 +6538,13 @@ var author$project$Update$update = F2(
 						{newModelJSON: newModelJSON}),
 					elm$core$Platform$Cmd$none);
 			case 'ApplyNewModelJSON':
-				var newModel = A2(elm$json$Json$Decode$decodeString, author$project$Decoder$modelDecoder, model.newModelJSON);
+				var newModelResult = A2(elm$json$Json$Decode$decodeString, author$project$Decoder$modelDecoder, model.newModelJSON);
+				var newModel = A2(elm$core$Result$withDefault, author$project$Model$emptyModel, newModelResult);
+				var newNextId = elm$core$Dict$size(newModel.queries);
 				return _Utils_Tuple2(
-					A2(elm$core$Result$withDefault, author$project$Model$emptyModel, newModel),
+					_Utils_update(
+						newModel,
+						{nextId: newNextId}),
 					elm$core$Platform$Cmd$none);
 			case 'RemoveQuery':
 				var id = msg.a;

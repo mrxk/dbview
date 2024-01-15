@@ -102,10 +102,16 @@ update msg model =
 
         Model.ApplyNewModelJSON ->
             let
-                newModel =
+                newModelResult =
                     Decode.decodeString Decoder.modelDecoder model.newModelJSON
+
+                newModel =
+                    Result.withDefault Model.emptyModel newModelResult
+
+                newNextId =
+                    Dict.size newModel.queries
             in
-            ( Result.withDefault Model.emptyModel newModel, Cmd.none )
+            ( { newModel | nextId = newNextId }, Cmd.none )
 
         Model.RemoveQuery id ->
             let

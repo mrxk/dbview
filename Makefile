@@ -1,6 +1,9 @@
 build:
 	dev-env exec -- sh -c "cd /src/client && elm make src/Main.elm --output ../html/elm.js"
 
+build_debug:
+	dev-env exec -- sh -c "cd /src/client && elm make src/Main.elm --debug --output ../html/elm.js"
+
 format:
 	dev-env exec -- sh -c "cd /src/client && elm-format --yes src/M* src/U* src/V*"
 
